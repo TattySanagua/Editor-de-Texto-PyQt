@@ -73,7 +73,7 @@ class Editor(QMainWindow):
         highlight_action.triggered.connect(self.choose_background_color)
 
         #AYUDA
-        about_action = QAction("About", self)
+        about_action = QAction("Acerca de", self)
         about_action.triggered.connect(self.about_dialog)
 
         menu_bar = self.menuBar()
@@ -139,23 +139,47 @@ class Editor(QMainWindow):
                 f.write(texto)
 
     def find_action(self):
-        pass
+        buscador, _ = QInputDialog.getText(self, "Buscar Texto", "Texto")
+        selecciones = []
+
+        if _ and not self.text_edit.isReadOnly():
+            self.text_edit.moveCursor(QTextCursor.Start)
+            color = QColor(Qt.yellow)
+
+            while (self.text_edit.find(buscador)):
+                seleccion = QTextEdit.ExtraSelection()
+                seleccion.format.setBackground(color)
+
+                seleccion.cursor = self.text_edit.textCursor()
+
+                selecciones.append(seleccion)
+
+        for i in selecciones:
+            self.text_edit.setExtraSelections(selecciones)
 
     def choose_font(self):
-        pass
+        actual = self.text_edit.currentFont()
+        fondo, ok = QFontDialog.getFont(actual, self)
+
+        if ok:
+            self.text_edit.setCurrentFont(fondo)
 
     def choose_color(self):
-        pass
+        color = QColorDialog.getColor()
+        if color.isValid():
+            self.text_edit.setTextColor(color)
 
     def choose_background_color(self):
-        pass
+        color = QColorDialog.getColor()
+        if color.isValid():
+            self.text_edit.setTextBackgroundColor(color)
 
     def about_dialog(self):
-        pass
+        QMessageBox.about(self, "Acerca del Editor", "Esto es un editor de texto avazado creado por mi para practicar Python con PyQt5")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    # app.setWindowIcon(QIcon("Imagenes/android.png"))
+    app.setWindowIcon(QIcon("noteblock.png"))
     window = Editor()
     window.show()
     sys.exit(app.exec_())
